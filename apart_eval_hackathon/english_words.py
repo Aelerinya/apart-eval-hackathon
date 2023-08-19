@@ -1,10 +1,10 @@
 from os.path import dirname
-path = dirname(__file__) + "/english_words.txt"
+path = dirname(__file__) + "/uncommon_english_words.txt"
 
 
 def english_words_dataset() -> list[str]:
     with open(path, "r") as f:
-        return f.read().splitlines()
+        return f.read().lower().splitlines()
 
 
 def random_words(count: int) -> list[str]:

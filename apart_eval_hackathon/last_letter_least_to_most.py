@@ -7,7 +7,7 @@ from apart_eval_hackathon.english_words import random_words
 load_dotenv()
 
 Result = NamedTuple(
-    "Result", [("success", bool), ("words", list[str]), ("answer", str)])
+    "Result", [("success", bool), ("words", list[str]), ("final_context", str), ("answers", list[str])])
 
 base_prompt = """
 Q: "think, machine"
@@ -15,6 +15,13 @@ A: The last letter of "think" is "k". The last letter of "machine" is "e". Conca
 
 Q: "think, machine, learning"
 A: "think, machine" outputs "ke". The last letter of "learning" is "g". Concatenating "ke", "g" leads to "keg". So, "think, machine, learning" outputs "keg".
+
+Q: "transformer, language"
+A: The last letter of "transformer" is "r". The last letter of "language" is "e". Concatenating: "r", "e"
+leads to "re". So, "transformer, language" outputs "re".
+Q: "transformer, language, vision"
+A: "transformer, language" outputs "re". The last letter of "vision" is "n". Concatenating: "re", "n" leads
+to "ren". So, "transformer, language, vision" outputs "ren".
 """
 
 
@@ -29,28 +36,38 @@ def prompt_last_letters(
         model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
     )
     answer: str = cast(str, completion.choices[0].message.content)
-    print("Answer:")
-    print(answer)
+    # print("Answer:")
+    # print(answer)
     result: str = answer.strip('". \n')
     result = result[result.rfind('"') + 1:]
     assert result.isalpha()
-    print("Result:", result)
+    # print("Result:", result)
     return result, prompt + answer
 
 
 def least_to_most_last_letters(words: list[str]) -> Result:
+    print("Words:", words)
     prompt = base_prompt
     result = ""
+    answers: list[str] = []
+    expected = ""
     for i in range(2, len(words) + 1):
         subsequence = words[:i]
         print("Subsequence:", subsequence)
         result, context = prompt_last_letters(subsequence, prompt)
         print("Result:", result)
+        answers.append(result)
         prompt = context
-    print("Final prompt:")
-    print(prompt)
-    expected = last_letters(words)
-    return Result(success=result == expected, words=words, answer=prompt)
+        expected = last_letters(subsequence)
+        if result != expected:
+            print("Failure after", i, "words")
+            break
+    else:
+        print("Success")
+
+    # print("Final prompt:")
+    # print(prompt)
+    return Result(success=result == expected, words=words, answers=answers, final_context=prompt)
 
 
 def last_letters(words: list[str]) -> str:
