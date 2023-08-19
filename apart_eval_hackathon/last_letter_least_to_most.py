@@ -1,23 +1,20 @@
+from typing import NamedTuple, cast
 import openai
 from dotenv import load_dotenv
 
+from apart_eval_hackathon.english_words import random_words
+
 load_dotenv()
 
-
-# Q, "transformer, language"
-# A: The last letter of "transformer" is "r". The last letter of "language" is "e". Concatenating "r", "e" leads to "re". So, "transformer, language" outputs "re".
-# R: "re"
-
-# Q: "transformer, language, vision"
+Result = NamedTuple(
+    "Result", [("success", bool), ("words", list[str]), ("answer", str)])
 
 base_prompt = """
 Q: "think, machine"
 A: The last letter of "think" is "k". The last letter of "machine" is "e". Concatenating "k", "e" leads to "ke". So, "think, machine" outputs "ke".
-R: "ke"
 
 Q: "think, machine, learning"
 A: "think, machine" outputs "ke". The last letter of "learning" is "g". Concatenating "ke", "g" leads to "keg". So, "think, machine, learning" outputs "keg".
-R: "keg"
 """
 
 
@@ -31,16 +28,19 @@ def prompt_last_letters(
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
     )
-    answer: str = completion.choices[0].message.content
+    answer: str = cast(str, completion.choices[0].message.content)
     print("Answer:")
     print(answer)
-    result: str = answer.split("R: ")[1].strip('"')
-    # print("Result:", result)
+    result: str = answer.strip('". \n')
+    result = result[result.rfind('"') + 1:]
+    assert result.isalpha()
+    print("Result:", result)
     return result, prompt + answer
 
 
-def least_to_most_last_letters(words: list[str]) -> str:
+def least_to_most_last_letters(words: list[str]) -> Result:
     prompt = base_prompt
+    result = ""
     for i in range(2, len(words) + 1):
         subsequence = words[:i]
         print("Subsequence:", subsequence)
@@ -49,7 +49,8 @@ def least_to_most_last_letters(words: list[str]) -> str:
         prompt = context
     print("Final prompt:")
     print(prompt)
-    return result
+    expected = last_letters(words)
+    return Result(success=result == expected, words=words, answer=prompt)
 
 
 def last_letters(words: list[str]) -> str:
@@ -80,8 +81,17 @@ if __name__ == "__main__":
         # "reinforcement",
         # "learning",
     ]
-    result = least_to_most_last_letters(words)
-    expected = last_letters(words)
-    print("Expected:", expected)
-    print("Result:", result)
-    print(f"The answer is {'correct' if result == expected else 'incorrect'}.")
+    # result = least_to_most_last_letters(words)
+    # print(result)
+    # print(prompt_last_letters(["think", "machine"]))
+
+    results: list[Result] = []
+    for i in range(10):
+        words = random_words(10)
+        result = least_to_most_last_letters(words)
+        results.append(result)
+
+    # save as pickle
+    import pickle
+    with open("last_letter_least_to_most.pickle", "wb") as f:
+        pickle.dump(results, f)
