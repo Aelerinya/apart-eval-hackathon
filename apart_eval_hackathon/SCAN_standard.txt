@@ -1,0 +1,41 @@
+Q: “turn left”
+A: “TURN LEFT”
+
+Q: “turn right”
+A: “TURN RIGHT”
+
+Q: “jump left”
+A: “TURN LEFT” + “JUMP”
+
+Q: “run right”
+A: “TURN RIGHT” + “RUN”
+
+Q: “look twice”
+A: “LOOK” * 2
+
+Q: “run and look twice”
+A: “RUN” + “LOOK” * 2
+
+Q: “jump right thrice”
+A: (“TURN RIGHT” + “JUMP”) * 3
+
+Q: “walk after run”
+A: “RUN” + “WALK”
+
+Q: “turn opposite left”
+A: “TURN LEFT” * 2
+
+Q: “turn around left”
+A: “TURN LEFT” * 4
+
+Q: “turn opposite right”
+A: “TURN RIGHT” * 2
+
+Q: “turn around right”
+A: “TURN RIGHT” * 4
+
+Q: “walk opposite left”
+A: “TURN LEFT” * 2 + “WALK”
+
+Q: “walk around left”
+A: (“TURN LEFT” + “WALK”) * 4
