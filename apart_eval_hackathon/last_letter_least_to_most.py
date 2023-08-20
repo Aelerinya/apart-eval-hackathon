@@ -1,32 +1,26 @@
 from typing import NamedTuple, Optional, cast
 import openai
 from dotenv import load_dotenv
+from tqdm import tqdm, trange
 
-from apart_eval_hackathon.english_words import random_words
+from english_words import random_words
 
 load_dotenv()
 
-Prediction = NamedTuple(
-    "SubsequencePrediction",
-    [
-        ("success", bool),
-        ("words", list[str]),
-        ("answer", Optional[str]),
-        ("completion", str),
-    ],
-)
+
+class Prediction(NamedTuple):
+    success: bool
+    words: list[str]
+    answer: Optional[str]
+    completion: str
 
 
-Result = NamedTuple(
-    "Result",
-    [
-        ("success", bool),
-        ("words", list[str]),
-        ("subsequence_predictions", list[Prediction]),
-        ("final_predictions", list[Prediction]),
-        ("final_context", str),
-    ],
-)
+class Result(NamedTuple):
+    words: list[str]
+    subsequence_predictions: list[Prediction]
+    final_predictions: list[Prediction]
+    final_context: str
+
 
 base_prompt = """
 Q: "think, machine"
@@ -63,18 +57,18 @@ def prompt_last_letters(
         answer = answer[answer.rfind('"') + 1 :]
         assert answer.isalpha()
     except:
-        return Prediction(False, words, None, completion), prompt + answer
+        return Prediction(False, words, None, completion), prompt + completion
     # print("Result:", result)
 
     expected = last_letters(words)
     return (
         Prediction(expected == answer, words, answer, completion),
-        prompt + answer,
+        prompt + completion,
     )
 
 
-def least_to_most_last_letters(words: list[str]) -> Result:
-    print("Words:", words)
+def least_to_most_last_letters(words: list[str], *, bar) -> Result:
+    bar.write(f"Words: {words}")
     prompt = base_prompt
 
     subsequence_predictions: list[Prediction] = []
@@ -83,24 +77,21 @@ def least_to_most_last_letters(words: list[str]) -> Result:
     final_prediction, final_prompt = prompt_last_letters(words, prompt)
     final_predictions.append(final_prediction)
 
-    for i in range(2, len(words) + 1):
+    for i in range(2, len(words)):
         subsequence = words[:i]
-        print("Subsequence:", subsequence)
+        bar.write(f"Subsequence: {subsequence}")
         subsequence_prediction, new_prompt = prompt_last_letters(subsequence, prompt)
         subsequence_predictions.append(subsequence_prediction)
         prompt = new_prompt
-        print("Prediction:", subsequence_prediction.answer)
+        bar.write(f"Prediction: {subsequence_prediction}")
 
-        final_prediction, final_prompt = prompt_last_letters(subsequence, new_prompt)
+        final_prediction, final_prompt = prompt_last_letters(words, new_prompt)
         final_predictions.append(final_prediction)
-
-    else:
-        print("Success")
+        bar.write(f"Final prediction: {final_prediction}")
 
     # print("Final prompt:")
     # print(prompt)
     return Result(
-        success=final_prediction.success,
         words=words,
         subsequence_predictions=subsequence_predictions,
         final_predictions=final_predictions,
@@ -115,14 +106,14 @@ def last_letters(words: list[str]) -> str:
 
 if __name__ == "__main__":
     words = [
-        "transformer",
-        "language",
-        "vision",
-        "learning",
-        # "machine",
-        # "think",
-        # "ai",
-        # "robot",
+        # "transformer",
+        # "language",
+        # "vision",
+        # "learning",
+        "machine",
+        "think",
+        "ai",
+        "robot",
         # "human",
         # "computer",
         # "intelligence",
@@ -138,12 +129,14 @@ if __name__ == "__main__":
     ]
     # result = least_to_most_last_letters(words)
     # print(result)
+    # print(result.final_context)
     # print(prompt_last_letters(["think", "machine"]))
 
     results: list[Result] = []
-    for i in range(3):
-        words = random_words(10)
-        result = least_to_most_last_letters(words)
+    bar = trange(20)
+    for i in bar:
+        words = random_words(5)
+        result = least_to_most_last_letters(words, bar=bar)
         results.append(result)
 
     # save as pickle

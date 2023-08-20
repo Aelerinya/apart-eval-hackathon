@@ -1,5 +1,6 @@
 from os.path import dirname
-path = dirname(__file__) + "/uncommon_english_words.txt"
+
+path = dirname(__file__) + "/english_words.txt"
 
 
 def english_words_dataset() -> list[str]:
@@ -9,6 +10,7 @@ def english_words_dataset() -> list[str]:
 
 def random_words(count: int) -> list[str]:
     from random import sample
+
     return sample(english_words_dataset(), count)
 
 
