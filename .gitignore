@@ -3,7 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 .vscode
-apart_eval_hackathon/data/*.csv
+apart_eval_hackathon/data/DROP*.csv
+apart_eval_hackathon/data/drop*.csv
 
 # C extensions
 *.so
