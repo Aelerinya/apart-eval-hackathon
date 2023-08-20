@@ -1,0 +1,26 @@
+The city of Bangkok has a population of 8,280,925. The census showed that it is home to 81,570 Japanese and 55,893 Chinese nationals, as well as 117,071 expatriates from other Asian countries, 48,341 from Europe, 23,418 from the Americas.
+Q: How many Chinese nationals are there?
+A: "The census showed that it is home to 81,570 Japanese and 55,893 Chinese nationals". So the answer is 55,893 Chinese nationals.
+
+Q: How many European nationals are there?
+A: "48,341 from Europe". So the answer is 48,341.
+
+Q: How many more Chinese nationals are there than European nationals?
+A: We know that there are 55,893 Chinese nationals. We also know that there are 48,341 European nationals. So there are 55,893 - 48,341 = 7552 more Chinese nationals than European nationals. So the answer is 7552.
+
+The gender distribution of the population was 50.2% male and 49.8% female. Of the adult population, 29 people or 14.6% of the population are between 20 and 29 years old. 28 people or 14.1% are 30 to 39, 36 people or 18.2% are 40 to 49, and 31 people or 15.7% are 50 to 59.
+Q: What is the percentage of people between 40 to 49?.
+A: "36 people or 18.2% are 40 to 49". So the answer is 18.2
+
+Q: How many percent of people were not 40 to 49?
+A: We know that 18.2% are 40 to 49. So 100% - 18.2% = 81.8% are not 40 to 49. So the answer is 81.8%.
+
+During the 1970s the oil shocks (1973 oil crisis and 1979 energy crisis) hit Iceland hard. Inflation rose to 43% in 1974 and 59% in 1980, falling to 15% in 1987 but rising to 30% in 1988. Iceland experienced moderately strong GDP growth (3% on average) from 1995 to 2004. Growth slowed between 2000 and 2002, but the economy expanded by 4.3% in 2003 and grew by 6.2% in 2004. Growth in 2005 exceeded 6%.
+Q: When did the oil crisis occur?
+A: "1973 oil crisis and 1979 energy crisis". So the answer is 1973.
+
+Q: When did the energy crisis occur?
+A: "1979 energy crisis". So the answer is 1979.
+
+Q: How many years passed between the oil and energy crises?
+A: We know that the oil crisis occurred in 1973. We also know that the energy crisis occurred in 1979. So 1979 - 1973 = 6 years passed between the oil and energy crises. So the answer is 6.
