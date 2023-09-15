@@ -1,7 +1,8 @@
 from typing import NamedTuple, Optional, cast
 import openai
 from dotenv import load_dotenv
-from tqdm import tqdm, trange
+from tqdm import trange
+import pickle
 
 from english_words import random_words
 
@@ -44,21 +45,26 @@ def prompt_last_letters(
 ) -> tuple[Prediction, str]:
     wordlist = ", ".join(words)
     prompt = preprompt + f'\n\nQ: "{wordlist}"\n'
-    # print("Prompt:")
-    # print(prompt)
-    completion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
-    )
+    while True:
+        try:
+            completion = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                request_timeout=5,
+            )
+            break
+        except Exception as e:
+            print(e)
+            if input("Continue ? (y/n)") != "y":
+                raise e
+
     completion: str = cast(str, completion.choices[0].message.content)
-    # print("Answer:")
-    # print(answer)
     try:
         answer: str = completion.strip('". \n')
         answer = answer[answer.rfind('"') + 1 :]
         assert answer.isalpha()
     except:
         return Prediction(False, words, None, completion), prompt + completion
-    # print("Result:", result)
 
     expected = last_letters(words)
     return (
@@ -89,8 +95,6 @@ def least_to_most_last_letters(words: list[str], *, bar) -> Result:
         final_predictions.append(final_prediction)
         bar.write(f"Final prediction: {final_prediction}")
 
-    # print("Final prompt:")
-    # print(prompt)
     return Result(
         words=words,
         subsequence_predictions=subsequence_predictions,
@@ -105,42 +109,12 @@ def last_letters(words: list[str]) -> str:
 
 
 if __name__ == "__main__":
-    words = [
-        # "transformer",
-        # "language",
-        # "vision",
-        # "learning",
-        "machine",
-        "think",
-        "ai",
-        "robot",
-        # "human",
-        # "computer",
-        # "intelligence",
-        # "artificial",
-        # "neural",
-        # "network",
-        # "deep",
-        # "learning",
-        # "supervised",
-        # "unsupervised",
-        # "reinforcement",
-        # "learning",
-    ]
-    # result = least_to_most_last_letters(words)
-    # print(result)
-    # print(result.final_context)
-    # print(prompt_last_letters(["think", "machine"]))
-
     results: list[Result] = []
-    bar = trange(20)
+    bar = trange(100)
     for i in bar:
-        words = random_words(5)
+        words = random_words(7)
         result = least_to_most_last_letters(words, bar=bar)
         results.append(result)
-
-    # save as pickle
-    import pickle
 
     with open("last_letter_least_to_most.pickle", "wb") as f:
         pickle.dump(results, f)
